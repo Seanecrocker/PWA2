@@ -1,4 +1,4 @@
-const { offlineFallback, warmStrategyCache } = require('workbox-recipes');
+const { warmStrategyCache } = require('workbox-recipes');
 const { CacheFirst } = require('workbox-strategies');
 const { registerRoute } = require('workbox-routing');
 const { CacheableResponsePlugin } = require('workbox-cacheable-response');
@@ -8,7 +8,7 @@ const { precacheAndRoute } = require('workbox-precaching/precacheAndRoute');
 precacheAndRoute(self.__WB_MANIFEST);
 
 const pageCache = new CacheFirst({
-  cacheName: 'page-cache',
+  cacheName: 'pages',
   plugins: [
     new CacheableResponsePlugin({
       statuses: [0, 200],
@@ -25,6 +25,3 @@ warmStrategyCache({
 });
 
 registerRoute(({ request }) => request.mode === 'navigate', pageCache);
-
-// TODO: Implement asset caching
-registerRoute();
