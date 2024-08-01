@@ -1,37 +1,63 @@
-import { openDB } from 'idb';
+// Open (or create) the database
+var request = indexedDB.open('jate', 1);
 
-const initdb = async () =>
-  openDB('jate', 1, {
-    upgrade(db) {
-      if (db.objectStoreNames.contains('jate')) {
-        console.log('jate database already exists');
-        return;
-      }
-      db.createObjectStore('jate', { keyPath: 'id', autoIncrement: true });
-      console.log('jate database created');
-    },
-  });
-
-// TODO: Add logic to a method that accepts some content and adds it to the database
-export const putDb = async (content) => {
-  const db = await openDB('jate', 1);
-  const tx = db.transaction('jate', 'readwrite');
-  const store = tx.objectStore('jate');
-  await store.put({ id: 1, content });
-  console.log('Data saved to IndexedDB', content);
+request.onupgradeneeded = function(event) {
+  var db = event.target.result;
+  if (!db.objectStoreNames.contains('jate')) {
+    db.createObjectStore('jate', { keyPath: 'id', autoIncrement: true });
+  }
 };
 
-// TODO: Add logic for a method that gets all the content from the database
-export const getDb = async () => {
-  const db = await openDB('jate', 1);
-  const tx = db.transaction('jate', 'readonly');
-  const store = tx.objectStore('jate');
-  const request = store.get(1);
-  const result = await request;
-  console.log('Data retrieved from IndexedDB', result);
-  return result?.content;
+request.onerror = function(event) {
+  console.log('Database error: ' + event.target.errorCode);
 };
 
-initdb();
+request.onsuccess = function(event) {
+  console.log('Database initialized successfully');
+};
 
+function putDb(content) {
+  var request = indexedDB.open('jate', 1);
 
+  request.onsuccess = function(event) {
+    var db = event.target.result;
+    var transaction = db.transaction('jate', 'readwrite');
+    var store = transaction.objectStore('jate');
+    var putRequest = store.put({ id: 1, value: content });
+
+    putRequest.onsuccess = function(event) {
+      console.log('Data saved to the database', event.target.result);
+    };
+
+    putRequest.onerror = function(event) {
+      console.log('Error saving data to the database', event.target.errorCode);
+    };
+  };
+
+  request.onerror = function(event) {
+    console.log('Database error: ' + event.target.errorCode);
+  };
+}
+
+function getDb() {
+  var request = indexedDB.open('jate', 1);
+
+  request.onsuccess = function(event) {
+    var db = event.target.result;
+    var transaction = db.transaction('jate', 'readonly');
+    var store = transaction.objectStore('jate');
+    var getRequest = store.getAll();
+
+    getRequest.onsuccess = function(event) {
+      console.log('Data retrieved from the database', event.target.result);
+    };
+
+    getRequest.onerror = function(event) {
+      console.log('Error retrieving data from the database', event.target.errorCode);
+    };
+  };
+
+  request.onerror = function(event) {
+    console.log('Database error: ' + event.target.errorCode);
+  };
+}
