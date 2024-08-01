@@ -1,23 +1,23 @@
 {
-  "name": "JATE",
+  "name": "PWA2",
   "version": "1.0.0",
-  "description": "Just Another Text Editor",
-  "main": "server.js",
+  "description": "",
+  "main": "server/server.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"cd client && npm start\"",
-    "server": "nodemon server/server.js --ignore client",
+    "start": "node server/server.js",
+    "build": "cd client && npm install && npm run build",
     "install": "cd client && npm install",
-    "build": "cd client && npm run build"
+    "client": "cd client && npm start",
+    "server": "nodemon server/server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "if-env": "^1.0.4"
+    "path": "^0.12.7",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.2",
+    "workbox-webpack-plugin": "^6.1.5"
   },
   "devDependencies": {
-    "concurrently": "^6.2.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.7"
   }
 }
